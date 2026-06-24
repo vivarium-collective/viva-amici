@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -108,14 +109,29 @@ def _load_model(config: dict):
     model_dir = config.get("model_dir") or str(amici.get_model_dir(model_id))
     model_dir_p = Path(model_dir)
     model_dir_p.mkdir(parents=True, exist_ok=True)
-    compiled_init = model_dir_p / model_id / "__init__.py"
-    if not compiled_init.is_file():
+
+    # An aborted compile (e.g. ninja missing) can leave the model dir with a
+    # ``__init__.py`` but no built extension module, which then fails to import.
+    # Treat "compiled" as "the extension actually loads", and recompile once
+    # (after clearing the poisoned dir) if it doesn't — so a half-written cache
+    # self-heals instead of failing every subsequent run.
+    def _build():
         _compile_model(
             kind, source, model_id, model_dir_p,
             verbose=not config.get("quiet_compile", True),
         )
 
-    mod = import_model_module(model_id, str(model_dir_p))
+    compiled_init = model_dir_p / model_id / "__init__.py"
+    if not compiled_init.is_file():
+        _build()
+
+    try:
+        mod = import_model_module(model_id, str(model_dir_p))
+    except (ModuleNotFoundError, ImportError):
+        # Poisoned cache from an interrupted build — wipe and recompile once.
+        shutil.rmtree(model_dir_p / model_id, ignore_errors=True)
+        _build()
+        mod = import_model_module(model_id, str(model_dir_p))
     return mod, mod.get_model()
 
 
