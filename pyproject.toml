@@ -28,7 +28,7 @@ dependencies = [
     "pypdf>=4.0",
     "matplotlib",
     "plotly",
-    "vivarium-dashboard",
+    "vivarium-workbench",
     # ninja is the build backend AMICI invokes to compile each model's C++
     # extension at runtime. Without it AMICI cannot compile ANY model, so it is
     # a hard runtime requirement, not a dev convenience (amici pulls
@@ -55,10 +55,10 @@ testpaths = ["tests"]
 # must not try to collect those as test files.
 norecursedirs = ["amici_models", ".pbg", "investigations", "demo"]
 
-# vivarium-dashboard isn't on PyPI; pin it to its public git repo so this
+# vivarium-workbench isn't on PyPI; pin it to its public git repo so this
 # source is portable across CI, Docker, and collaborators' machines. For local
 # dev against a sibling checkout, override with an editable install into your
 # venv (no committed local path required):
 #     uv pip install -e ../vivarium-dashboard
 [tool.uv.sources]
-vivarium-dashboard = { git = "https://github.com/vivarium-collective/vivarium-dashboard.git", branch = "main" }
+vivarium-workbench = { git = "https://github.com/vivarium-collective/vivarium-dashboard.git", branch = "main" }
