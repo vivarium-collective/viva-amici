@@ -1,6 +1,6 @@
 """Optional ``@composite_generator`` shim.
 
-When ``pbg_superpowers`` is installed (the vivarium-dashboard runtime), the
+When ``pbg_superpowers`` is installed (the vivarium-workbench runtime), the
 real decorator registers each generator with the dashboard's discovery
 machinery. When it isn't, we fall back to a no-op so the module still
 imports and the decorated functions remain directly callable.
