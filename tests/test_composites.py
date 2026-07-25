@@ -17,8 +17,8 @@ from pbg_amici.composites.mapk_cascade import mapk_cascade  # noqa: E402
 
 def test_generators_are_registered():
     """Decorators must side-effect-register on package import."""
-    pytest.importorskip("pbg_superpowers")
-    from pbg_superpowers.composite_generator import _REGISTRY
+    pytest.importorskip("viva_superpowers")
+    from viva_superpowers.composite_generator import _REGISTRY
 
     names = [eid for eid in _REGISTRY if eid.endswith(".amici_exponential_decay")]
     assert names, (
