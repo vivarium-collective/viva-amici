@@ -59,6 +59,6 @@ norecursedirs = ["amici_models", ".pbg", "investigations", "demo"]
 # source is portable across CI, Docker, and collaborators' machines. For local
 # dev against a sibling checkout, override with an editable install into your
 # venv (no committed local path required):
-#     uv pip install -e ../vivarium-dashboard
+#     uv pip install -e ../vivarium-workbench
 [tool.uv.sources]
-vivarium-workbench = { git = "https://github.com/vivarium-collective/vivarium-dashboard.git", branch = "main" }
+vivarium-workbench = { git = "https://github.com/vivarium-collective/vivarium-workbench.git", branch = "main" }
