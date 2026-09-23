@@ -9,10 +9,10 @@ pytest.importorskip("antimony")
 
 from process_bigraph import Composite, allocate_core, gather_emitter_results  # noqa: E402
 
-from pbg_amici import AmiciProcess  # noqa: E402
-from pbg_amici.composites.exponential_decay import exponential_decay  # noqa: E402
-from pbg_amici.composites.lotka_volterra import lotka_volterra  # noqa: E402
-from pbg_amici.composites.mapk_cascade import mapk_cascade  # noqa: E402
+from viva_amici import AmiciProcess  # noqa: E402
+from viva_amici.composites.exponential_decay import exponential_decay  # noqa: E402
+from viva_amici.composites.lotka_volterra import lotka_volterra  # noqa: E402
+from viva_amici.composites.mapk_cascade import mapk_cascade  # noqa: E402
 
 
 def test_generators_are_registered():

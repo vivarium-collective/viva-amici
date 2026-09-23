@@ -1,4 +1,4 @@
-"""pbg-amici: process-bigraph wrapper for AMICI."""
+"""viva-amici: process-bigraph wrapper for AMICI."""
 
 from .processes import AmiciProcess, AmiciUTCStep, AmiciSteadyStateStep
 from . import composites  # noqa: F401  (registers @composite_generator decorations)

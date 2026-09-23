@@ -1,4 +1,4 @@
-"""Demo: pbg-amici multi-configuration ODE report.
+"""Demo: viva-amici multi-configuration ODE report.
 
 Runs three composite generators (exponential decay, Lotka-Volterra,
 MAPK cascade) end-to-end through AMICI's real sundials/CVODES bridge,
@@ -24,10 +24,10 @@ os.environ.setdefault(
 
 from process_bigraph import Composite, allocate_core, gather_emitter_results
 
-from pbg_amici import AmiciProcess  # noqa: F401  -- triggers process registration
-from pbg_amici.composites.exponential_decay import exponential_decay
-from pbg_amici.composites.lotka_volterra import lotka_volterra
-from pbg_amici.composites.mapk_cascade import mapk_cascade
+from viva_amici import AmiciProcess  # noqa: F401  -- triggers process registration
+from viva_amici.composites.exponential_decay import exponential_decay
+from viva_amici.composites.lotka_volterra import lotka_volterra
+from viva_amici.composites.mapk_cascade import mapk_cascade
 
 
 # ── Configs ─────────────────────────────────────────────────────────
@@ -342,7 +342,7 @@ def build_report(results: list[dict], output_path: Path) -> None:
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>pbg-amici demo report</title>
+  <title>viva-amici demo report</title>
   <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   <style>
     body {{
@@ -425,7 +425,7 @@ def build_report(results: list[dict], output_path: Path) -> None:
   </style>
 </head>
 <body>
-  <h1>pbg-amici demo report</h1>
+  <h1>viva-amici demo report</h1>
   <p class="lede">
     Three composite generators driven through AMICI's real sundials/CVODES
     bridge — each compiled per-model and integrated step-by-step through

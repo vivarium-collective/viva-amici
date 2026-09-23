@@ -3,13 +3,13 @@ requires = ["hatchling>=1.18"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pbg-amici"
+name = "viva-amici"
 version = "0.1.0"
 description = "Process-bigraph wrapper for AMICI (Advanced Multilanguage Interface to CVODES and IDAS)"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.11"
-authors = [{name = "pbg-amici authors", email = "noreply@example.com"}]
+authors = [{name = "viva-amici authors", email = "noreply@example.com"}]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -42,12 +42,12 @@ dependencies = [
 dev = ["pytest", "matplotlib", "plotly", "bigraph-viz"]
 
 [project.urls]
-Homepage = "https://github.com/vivarium-collective/pbg-amici"
+Homepage = "https://github.com/vivarium-collective/viva-amici"
 Upstream = "https://github.com/AMICI-dev/AMICI"
-Issues = "https://github.com/vivarium-collective/pbg-amici/issues"
+Issues = "https://github.com/vivarium-collective/viva-amici/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["pbg_amici"]
+packages = ["viva_amici"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
