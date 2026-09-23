@@ -1,4 +1,4 @@
-# Contributing to pbg-amici
+# Contributing to viva-amici
 
 ## Development setup
 

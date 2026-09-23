@@ -16,7 +16,7 @@ import math  # noqa: E402
 
 from process_bigraph import allocate_core  # noqa: E402
 
-from pbg_amici import AmiciProcess, AmiciUTCStep, AmiciSteadyStateStep  # noqa: E402
+from viva_amici import AmiciProcess, AmiciUTCStep, AmiciSteadyStateStep  # noqa: E402
 
 
 _DECAY = """

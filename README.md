@@ -1,4 +1,4 @@
-# pbg-amici
+# viva-amici
 
 A [process-bigraph](https://github.com/vivarium-collective/process-bigraph)
 wrapper for **AMICI** — the [Advanced Multilanguage Interface to CVODES and
@@ -14,7 +14,7 @@ re-implementation of its math and not a mock.
 
 ---
 
-### ▶ [**Live interactive demo report →**](https://vivarium-collective.github.io/pbg-amici/)
+### ▶ [**Live interactive demo report →**](https://vivarium-collective.github.io/viva-amici/)
 
 Three AMICI-driven composites (exponential decay, Lotka-Volterra, MAPK
 cascade) running end-to-end through process-bigraph, with Plotly time-series
@@ -27,7 +27,7 @@ PBG document tree — all in one self-contained HTML page.
 
 ```bash
 # From PyPI (once released):
-pip install pbg-amici
+pip install viva-amici
 
 # For development (editable):
 uv venv .venv && source .venv/bin/activate
@@ -49,7 +49,7 @@ needed.
 
 ```python
 from process_bigraph import Composite, allocate_core, gather_emitter_results
-from pbg_amici.composites.lotka_volterra import lotka_volterra
+from viva_amici.composites.lotka_volterra import lotka_volterra
 
 core = allocate_core()
 sim = Composite({"state": lotka_volterra(core=core, interval=0.25)}, core=core)

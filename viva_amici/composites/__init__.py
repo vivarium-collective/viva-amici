@@ -1,4 +1,4 @@
-"""Dashboard-discoverable composite generators for pbg-amici."""
+"""Dashboard-discoverable composite generators for viva-amici."""
 
 from . import exponential_decay  # noqa: F401
 from . import lotka_volterra  # noqa: F401
