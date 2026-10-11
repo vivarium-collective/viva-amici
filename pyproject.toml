@@ -55,6 +55,22 @@ testpaths = ["tests"]
 # must not try to collect those as test files.
 norecursedirs = ["amici_models", ".pbg", "investigations", "demo"]
 
+# The Build-and-Push workflow builds a multi-arch image (linux/amd64 AND
+# linux/arm64). Declare BOTH as required environments so `uv lock` resolves a
+# version of every dependency that is actually installable on each arch. This
+# matters for `antimony`: its latest releases (3.x) ship a linux x86_64 wheel
+# but NO linux aarch64 wheel and no sdist, so a resolution that ignores arm64
+# pins 3.x and then the arm64 image build fails at install time with
+# "Distribution `antimony==3.x` can't be installed ... only has wheels for
+# manylinux_2_28_x86_64, macosx, win_amd64". With arm64 required, uv forks
+# antimony to 2.14.0 (the one release with a manylinux_2_28_aarch64 wheel) for
+# linux/arm64 while keeping 3.x everywhere else.
+[tool.uv]
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'linux' and platform_machine == 'aarch64'",
+]
+
 # vivarium-workbench isn't on PyPI; pin it to its public git repo so this
 # source is portable across CI, Docker, and collaborators' machines. For local
 # dev against a sibling checkout, override with an editable install into your
