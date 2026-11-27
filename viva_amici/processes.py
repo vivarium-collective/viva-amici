@@ -28,7 +28,9 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from process_bigraph import Process, Step
+from process_bigraph import Process
+
+from engine_core import SteadyStateStep, UniformTimeCourseStep
 
 
 def _hash_source(source: str) -> str:
@@ -330,39 +332,16 @@ class AmiciProcess(Process):
 # --------------------------------------------------------------------------- #
 
 
-def _validate_n_points(n: Any) -> int:
-    try:
-        n = int(n)
-    except (TypeError, ValueError):
-        raise ValueError(f"AmiciUTCStep: n_points must be an integer >= 2, got {n!r}")
-    if n < 2:
-        raise ValueError(f"AmiciUTCStep: n_points must be >= 2, got {n}")
-    return n
-
-
-class AmiciUTCStep(Step):
+class AmiciUTCStep(UniformTimeCourseStep):
     """One-shot uniform time course via AMICI.
 
-    Runtime inputs (so a loader can feed them dynamically):
-
-    * ``model_source`` — path to an SBML file.
-    * ``time``         — integration horizon (t runs 0 → time).
-    * ``n_points``     — number of evenly-spaced output points (>= 2).
-
-    Emits the canonical ``{result: {time, columns, values}}`` trajectory, one
-    column per AMICI state id (the species ids from the SBML). This matches the
-    one-shot UTC contract consumed by multi-simulator comparison harnesses.
+    Implements the shared ``engine_core.UniformTimeCourseStep`` contract (fixed
+    ``model_source``/``time``/``n_points`` inputs and canonical
+    ``{result: {time, columns, values}}`` output); only the AMICI integration is
+    local. One column per AMICI state id (the species ids from the SBML).
     """
 
-    config_schema = dict(_SOLVER_CONFIG_SCHEMA)
-
-    def inputs(self) -> dict[str, str]:
-        return {"model_source": "string", "time": "float", "n_points": "integer"}
-
-    def outputs(self) -> dict[str, str]:
-        # ``tree`` keeps this Step self-contained — it doesn't depend on a
-        # downstream ``numeric_result`` type being registered in the core.
-        return {"result": "tree"}
+    config_schema = {**UniformTimeCourseStep.config_schema, **_SOLVER_CONFIG_SCHEMA}
 
     def _model_config(self, model_source: str) -> dict:
         # Inline-clear the other source keys so exactly one is set.
@@ -370,19 +349,16 @@ class AmiciUTCStep(Step):
         cfg.update(antimony="", sbml="", sbml_file=model_source)
         return cfg
 
-    def update(self, state: dict[str, Any]) -> dict[str, Any]:
+    def simulate(self, model_source, time, n_points):
         from amici.sim.sundials import run_simulation
 
-        n_points = _validate_n_points(state["n_points"])
-        horizon = float(state["time"])
-
-        _mod, model = _load_model(self._model_config(state["model_source"]))
+        _mod, model = _load_model(self._model_config(model_source))
         solver = model.create_solver()
         _configure_solver(solver, self.config)
 
         state_ids = list(model.get_state_ids())
         model.set_initial_state(list(model.get_initial_state()))
-        timepoints = [horizon * i / (n_points - 1) for i in range(n_points)]
+        timepoints = [time * i / (n_points - 1) for i in range(n_points)]
         model.set_t0(0.0)
         model.set_timepoints([float(t) for t in timepoints])
 
@@ -390,46 +366,33 @@ class AmiciUTCStep(Step):
         if int(rdata.status) != 0:
             raise RuntimeError(
                 f"AMICI UTC integration failed: status={int(rdata.status)} "
-                f"over horizon={horizon} with n_points={n_points}"
+                f"over horizon={time} with n_points={n_points}"
             )
 
         xs = rdata.x
         values = [
-            [float(xs[r][c]) for c in range(len(state_ids))]
+            [xs[r][c] for c in range(len(state_ids))]
             for r in range(len(timepoints))
         ]
-        return {
-            "result": {
-                "time": list(timepoints),
-                "columns": state_ids,
-                "values": values,
-            }
-        }
+        return timepoints, state_ids, values
 
 
-class AmiciSteadyStateStep(Step):
+class AmiciSteadyStateStep(SteadyStateStep):
     """One-shot steady-state solve via AMICI.
 
-    Runtime input ``model_source`` (an SBML file path). Integrates to steady
-    state using AMICI's ``t = inf`` timepoint and emits the final value of
-    each state id as ``{result: {kind: "steady_state", time: None,
-    observables: {id: value}}}`` — the steady-state contract consumed by
-    multi-simulator comparison harnesses.
+    Implements the shared ``engine_core.SteadyStateStep`` contract: runtime input
+    ``model_source``. Integrates to steady state using AMICI's ``t = inf``
+    timepoint and emits the final value of each state id as
+    ``{result: {kind: "steady_state", time: None, observables: {id: value}}}``.
     """
 
-    config_schema = dict(_SOLVER_CONFIG_SCHEMA)
+    config_schema = {**SteadyStateStep.config_schema, **_SOLVER_CONFIG_SCHEMA}
 
-    def inputs(self) -> dict[str, str]:
-        return {"model_source": "string"}
-
-    def outputs(self) -> dict[str, str]:
-        return {"result": "tree"}
-
-    def update(self, state: dict[str, Any]) -> dict[str, Any]:
+    def steady_state(self, model_source):
         from amici.sim.sundials import run_simulation
 
         cfg = dict(self.config)
-        cfg.update(antimony="", sbml="", sbml_file=state["model_source"])
+        cfg.update(antimony="", sbml="", sbml_file=model_source)
         _mod, model = _load_model(cfg)
         solver = model.create_solver()
         _configure_solver(solver, self.config)
@@ -446,13 +409,4 @@ class AmiciSteadyStateStep(Step):
             )
 
         x_final = rdata.x[-1]
-        observables = {
-            sid: float(x_final[i]) for i, sid in enumerate(state_ids)
-        }
-        return {
-            "result": {
-                "kind": "steady_state",
-                "time": None,
-                "observables": observables,
-            }
-        }
+        return {sid: x_final[i] for i, sid in enumerate(state_ids)}

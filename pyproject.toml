@@ -18,6 +18,8 @@ classifiers = [
 dependencies = [
     "bigraph-schema>=0.0.60",
     "process-bigraph>=0.0.66",
+    # Shared uniform-time-course / steady-state Step contract.
+    "engine-core @ git+https://github.com/vivarium-collective/engine-core.git@main",
     "amici>=1.0",
     "antimony>=2.13",
     "numpy",
