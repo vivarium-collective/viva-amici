@@ -410,3 +410,70 @@ class AmiciSteadyStateStep(SteadyStateStep):
 
         x_final = rdata.x[-1]
         return {sid: x_final[i] for i, sid in enumerate(state_ids)}
+
+
+class AmiciFullReportUTCStep(UniformTimeCourseStep):
+    """One-shot full-report uniform time course via AMICI.
+
+    Unlike :class:`AmiciUTCStep` (state/species only), this one-shot Step emits
+    the SED-ML report's full set — floating species (``rdata.x`` / state ids) AND
+    reaction **fluxes** (``rdata.w`` for the model's ``flux_<Rid>`` expressions,
+    renamed to the bare SBML reaction id) — conforming to the shared
+    ``engine_core`` uniform-time-course contract (runtime ``model_source`` /
+    ``time`` / ``n_points`` inputs → canonical ``{result: {time, columns,
+    values}}``). This AMICI-specific capability (matching the BioSimulators AMICI
+    reference, which reports fluxes too) previously lived as an adapter inside
+    viva-biomodels and now belongs with the AMICI wrapper so any consumer can
+    reuse it. Constant parameters/compartments are completed by the consumer
+    downstream.
+    """
+
+    config_schema = {**UniformTimeCourseStep.config_schema, **_SOLVER_CONFIG_SCHEMA}
+
+    def simulate(self, model_source, time, n_points):
+        import numpy as np
+        from amici.sim.sundials import run_simulation
+
+        horizon = float(time)
+        _mod, model = _load_model(
+            {"sbml_file": model_source, "antimony": "", "sbml": ""}
+        )
+        solver = model.create_solver()
+        _configure_solver(solver, self.config)
+
+        state_ids = list(model.get_state_ids())
+        model.set_initial_state(list(model.get_initial_state()))
+        timepoints = [horizon * i / (n_points - 1) for i in range(n_points)]
+        model.set_t0(0.0)
+        model.set_timepoints([float(t) for t in timepoints])
+
+        rdata = run_simulation(model, solver)
+        if int(rdata.status) != 0:
+            raise RuntimeError(
+                f"AMICI UTC integration failed: status={int(rdata.status)} "
+                f"over horizon={horizon} with n_points={n_points}"
+            )
+
+        xs = rdata.x
+        # Reaction fluxes live in the expression vector rdata.w as flux_<Rid>.
+        expr_ids = (
+            list(model.get_expression_ids())
+            if hasattr(model, "get_expression_ids")
+            else []
+        )
+        flux = [
+            (i, eid[len("flux_"):])
+            for i, eid in enumerate(expr_ids)
+            if eid.startswith("flux_")
+        ]
+        w = getattr(rdata, "w", None)
+        wnp = np.asarray(w) if w is not None else None
+
+        columns = list(state_ids) + [rid for _, rid in flux]
+        values = []
+        for r in range(len(timepoints)):
+            row = [xs[r][c] for c in range(len(state_ids))]
+            if wnp is not None:
+                row += [wnp[r][i] for i, _ in flux]
+            values.append(row)
+        return list(timepoints), columns, values
