@@ -48,6 +48,10 @@ Homepage = "https://github.com/vivarium-collective/viva-amici"
 Upstream = "https://github.com/AMICI-dev/AMICI"
 Issues = "https://github.com/vivarium-collective/viva-amici/issues"
 
+[tool.hatch.metadata]
+# engine-core is consumed as a git dependency (not yet on PyPI).
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["viva_amici"]
 
