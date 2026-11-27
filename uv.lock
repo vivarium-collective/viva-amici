@@ -185,7 +185,7 @@ wheels = [
 
 [[package]]
 name = "bigraph-schema"
-version = "1.7.0"
+version = "1.8.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -196,9 +196,9 @@ dependencies = [
     { name = "pint", version = "0.26.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "plum-dispatch" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9c/11/81195272ac43485123ac486028da54ad3a6c74e81b76ad5565e85606eec4/bigraph_schema-1.7.0.tar.gz", hash = "sha256:ceb3c7d9c72eb8b3f9c42f1ced704b498b9e32fb7a28a4008922917a04bb48b6", size = 184929, upload-time = "2026-10-04T18:16:41.109Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/91/b7/6c64dc74630817670dd4b9a04dc9450f08f4d0063ffc1d2b6f0d1440329d/bigraph_schema-1.8.4.tar.gz", hash = "sha256:8419b21d2c640113742fe5b2abf37bf3ef2aeaca0d91a9881d402729433d289e", size = 184250, upload-time = "2026-11-20T22:49:17.854Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/ec/5386cd413066f6a5b1500a3599c9bd30c5e247b96a3f1f032b03325ae5a5/bigraph_schema-1.7.0-py3-none-any.whl", hash = "sha256:406a87bdd5d4f259b1082c820a45930643cda72969cc89719408a404efbae40d", size = 184400, upload-time = "2026-10-04T18:16:39.356Z" },
+    { url = "https://files.pythonhosted.org/packages/94/85/b7cdd78a10ac073ddeb1ca5240cd409c4271d93d316b3d444257a5b49bc0/bigraph_schema-1.8.4-py3-none-any.whl", hash = "sha256:23c2a14a2fb6881bcd65f1dc030fcc2d57252d103f1f336e92ec6eaf7846ffca", size = 182170, upload-time = "2026-11-20T22:49:16.493Z" },
 ]
 
 [[package]]
@@ -749,6 +749,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ef/a5/6f8099d9a5a02ddff89e5c85875df3465054845b0920fb0703fbdf8dd2ec/duckdb-1.5.6-cp314-cp314-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:19c5e485e59613b8878d1670bcaa7a010f53c5a4da5ae8e08863e5e529ca6182", size = 21575132, upload-time = "2026-09-28T13:38:31.231Z" },
     { url = "https://files.pythonhosted.org/packages/9f/58/762f7159662d7859e201fa05ca29f306795daeabf84f3e087215a966b001/duckdb-1.5.6-cp314-cp314-win_amd64.whl", hash = "sha256:ebcbd09cd8578ab1093393e9b16289cda0e8f1791ac595bf00eb5bad75c3cf00", size = 13713963, upload-time = "2026-09-28T13:38:33.543Z" },
     { url = "https://files.pythonhosted.org/packages/46/69/64d165db322de13f5c3e75d377b6b9694df1821155ad1fa4b14b04601abc/duckdb-1.5.6-cp314-cp314-win_arm64.whl", hash = "sha256:820a8384faef11cd86068ea48c5da57ce2d8f1c7b3d2bdb9be3398317a7c3728", size = 14514368, upload-time = "2026-09-28T13:38:35.676Z" },
+]
+
+[[package]]
+name = "engine-core"
+version = "0.1.0"
+source = { git = "https://github.com/vivarium-collective/engine-core.git?rev=main#161b42a3add84468a673dd620972bb1e610f1978" }
+dependencies = [
+    { name = "bigraph-schema" },
+    { name = "process-bigraph" },
 ]
 
 [[package]]
@@ -3342,6 +3351,7 @@ dependencies = [
     { name = "antimony", version = "3.2.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
     { name = "bigraph-schema" },
     { name = "bigraph-viz" },
+    { name = "engine-core" },
     { name = "jinja2" },
     { name = "jsonschema", extra = ["format-nongpl"] },
     { name = "matplotlib" },
@@ -3370,6 +3380,7 @@ requires-dist = [
     { name = "bigraph-schema", specifier = ">=0.0.60" },
     { name = "bigraph-viz", specifier = ">=2.0.3" },
     { name = "bigraph-viz", marker = "extra == 'dev'" },
+    { name = "engine-core", git = "https://github.com/vivarium-collective/engine-core.git?rev=main" },
     { name = "jinja2", specifier = ">=3.1" },
     { name = "jsonschema", extras = ["format-nongpl"], specifier = ">=4.21" },
     { name = "matplotlib" },

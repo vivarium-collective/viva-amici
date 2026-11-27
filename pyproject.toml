@@ -18,6 +18,8 @@ classifiers = [
 dependencies = [
     "bigraph-schema>=0.0.60",
     "process-bigraph>=0.0.66",
+    # Shared uniform-time-course / steady-state Step contract.
+    "engine-core @ git+https://github.com/vivarium-collective/engine-core.git@main",
     "amici>=1.0",
     "antimony>=2.13",
     "numpy",
@@ -45,6 +47,10 @@ dev = ["pytest", "matplotlib", "plotly", "bigraph-viz"]
 Homepage = "https://github.com/vivarium-collective/viva-amici"
 Upstream = "https://github.com/AMICI-dev/AMICI"
 Issues = "https://github.com/vivarium-collective/viva-amici/issues"
+
+[tool.hatch.metadata]
+# engine-core is consumed as a git dependency (not yet on PyPI).
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["viva_amici"]
